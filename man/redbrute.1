@@ -1,0 +1,180 @@
+.TH REDBRUTE 1 "November 2026" "REDBRUTE" "User Commands"
+.SH NAME
+redbrute \- Python-based web authentication testing tool
+.SH SYNOPSIS
+.B redbrute
+.B -u
+.I URL
+.B -m
+.I FAIL_MESSAGE
+.RI [ OPTIONS ]
+.SH DESCRIPTION
+.B REDBRUTE
+is a Python-based web authentication testing tool designed for efficient and resource-conscious wordlist processing in authorized security testing environments.
+
+It uses batch-based wordlist loading to reduce memory consumption by processing a configurable number of entries at a time rather than loading an entire wordlist into memory.
+
+REDBRUTE also supports concurrent HTTP request execution, allowing multiple requests to be processed simultaneously.
+
+The tool provides configurable request methods, custom wordlists, HTTP headers, cookies, proxies, request timeouts, batch sizes, and worker threads.
+.SH REQUEST METHODS
+REDBRUTE supports the following HTTP request methods:
+.TP
+.B gu
+GET URL. Used when the authentication parameter is included in the URL query string. Requires
+.BR --param .
+.TP
+.B gf
+GET Form. Used for GET-based form authentication. Requires
+.BR --auth-param .
+.TP
+.B pf
+POST Form. Used for POST-based form authentication. Requires
+.B --data
+and
+.BR --param .
+.PP
+Select the appropriate method according to the target application's authentication mechanism. Missing or incorrect parameters may result in invalid requests.
+.SH REQUIRED OPTIONS
+.TP
+.BR -u ", " --url " " URL
+Specify the target URL.
+.TP
+.BR -m ", " --fail-message " " MESSAGE
+Specify the response message that indicates a failed authentication attempt.
+.SH OPTIONAL OPTIONS
+.TP
+.B --wordlist " " FILE
+Specify a custom wordlist. Defaults to
+.B ./rockyou.txt
+when omitted.
+.TP
+.B --data " " DATA
+Specify the HTTP request data. Required for the POST Form method.
+.TP
+.B --param " " PARAMETER
+Specify the parameter being tested. Required for GET URL and POST Form methods.
+.TP
+.B --auth-param " " PARAMETER
+Specify the authentication parameter for the GET Form method.
+.TP
+.BR -v ", " --verbose
+Enable verbose output.
+.TP
+.BR -k ", " --verify
+Disable SSL certificate verification.
+.TP
+.B --cookie " " COOKIE
+Specify HTTP cookies.
+.TP
+.B --header " " HEADER
+Specify custom HTTP headers.
+.TP
+.B --proxy " " URL
+Specify a proxy URL for request debugging and interception.
+.TP
+.B --timeout " " SECONDS
+Specify the HTTP request timeout in seconds. Default: 4.
+.TP
+.B --batch-size " " SIZE
+Specify the number of words loaded into memory per batch. Default: 1000.
+.TP
+.B --thread-counts " " COUNT
+Specify the number of concurrent worker threads. Default: 100.
+.TP
+.B --method " " METHOD
+Specify the HTTP request method. Accepted values:
+.BR gu ", " gf ", " pf ", " get-url ", " get-form ", " post_form .
+Default: pf.
+.SH WORDLIST PROCESSING
+REDBRUTE includes a default wordlist named
+.B rockyou.txt
+containing over 14 million password entries in commonly distributed versions.
+
+A custom wordlist can be supplied using
+.BR --wordlist .
+If no custom wordlist is specified, the included wordlist is used.
+
+REDBRUTE processes wordlists incrementally using configurable batches. This avoids loading the entire wordlist into memory and helps reduce memory consumption.
+.SH PERFORMANCE
+The default configuration uses a batch size of 1000 words and 100 worker threads.
+
+Users should adjust these settings according to available system resources and the authorized testing environment.
+
+For live-site testing, a conservative thread count below 20 is recommended, subject to the site's rate limits and testing authorization.
+
+On systems with limited RAM or CPU resources, reducing the batch size below 1000 may help improve resource management.
+
+Higher thread counts and larger batches do not necessarily guarantee better performance.
+.SH EXAMPLES
+.TP
+.B Basic execution
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed"
+.fi
+.TP
+.B Specify a custom wordlist
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed" \\
+    --wordlist passwords.txt
+.fi
+.TP
+.B Configure batch size and threads
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed" \\
+    --batch-size 500 --thread-counts 10
+.fi
+.TP
+.B GET URL method
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed" \\
+    --method gu --param username
+.fi
+.TP
+.B GET Form method
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed" \\
+    --method gf --auth-param username
+.fi
+.TP
+.B POST Form method
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed" \\
+    --method pf --data "username=admin&password=FUZZ" \\
+    --param password
+.fi
+.TP
+.B Use a proxy
+.nf
+redbrute -u http://127.0.0.1/login -m "Login failed" \\
+    --proxy http://127.0.0.1:8080
+.fi
+.TP
+.B Display help
+.nf
+redbrute --help
+.fi
+.SH FILES
+.TP
+.I ./rockyou.txt
+Default wordlist included with REDBRUTE.
+.TP
+.I ./assets/
+Contains banner assets.
+.TP
+.I ./architecture/
+Contains architecture documentation.
+.TP
+.I ./screenshots/
+Contains project screenshots.
+.SH AUTHOR
+REDBRUTE Development Team.
+.SH BUGS
+Report bugs and issues through the project's GitHub repository.
+.SH SECURITY
+REDBRUTE is intended for authorized security assessments, penetration-testing environments, and educational laboratories.
+
+Only test systems for which you have explicit permission. Respect service rate limits and avoid disrupting production systems.
+.SH SEE ALSO
+.BR python3 (1),
+.BR curl (1)
