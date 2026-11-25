@@ -1,7 +1,7 @@
 # REDBRUTE
 
 <p align="center">
-  <img src="assets/redbrute-banner.png" alt="REDBRUTE Banner" width="850">
+  <img src="assets/redbrute-banner.png.png" alt="REDBRUTE Banner" width="850">
 </p>
 
 <p align="center">
